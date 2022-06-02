@@ -66,6 +66,8 @@ func IsIn[T comparable](x T, xs []T) bool {
 	return IsIn(x, xs[1:])
 }
 
+// takes two slices of the same type
+// and returns a concatanated slice [...s1, ...s2]
 func ConcatSlices[T any](s1, s2 []T) []T {
 	return Map(s2, func(x T) T {
 		return x
