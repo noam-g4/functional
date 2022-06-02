@@ -100,3 +100,20 @@ func TestReduce(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestConcatSlices(t *testing.T) {
+	s1 := []int{1, 2, 3}
+	s2 := []int{4, 5, 6}
+
+	res := f.ConcatSlices(s1, s2)
+
+	if len(res) != 6 {
+		t.Fail()
+	}
+
+	for i, x := range res {
+		if i+1 != x {
+			t.Fail()
+		}
+	}
+}
