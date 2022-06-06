@@ -23,7 +23,7 @@ func AppendToSlice[T any](y []T, x T) []T {
 // takes a slice, function and empty EmptySet
 // and returns a new slice of which each element
 // has being passed through the function parameter
-func Map[T any](xs []T, f func(T) T, y []T) []T {
+func Map[A, B any](xs []A, f func(A) B, y []B) []B {
 	if IsEmptySlice(xs) {
 		return y
 	}
@@ -47,7 +47,7 @@ func Filter[T any](xs []T, p func(T) bool, y []T) []T {
 // and an element of the slice, an initial value for the accumalator
 // and returns the accumalated result,
 // govern by the parameter function
-func Reduce[T any](xs []T, f func(T, T) T, y T) T {
+func Reduce[X, Y any](xs []X, f func(Y, X) Y, y Y) Y {
 	if IsEmptySlice(xs) {
 		return y
 	}
