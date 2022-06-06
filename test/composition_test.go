@@ -28,3 +28,15 @@ func TestPipe(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestCompose(t *testing.T) {
+	f1 := f.Compose(add5, sub2)
+	f2 := f.Compose(addExMark, capitalize)
+
+	y1 := f1(5)
+	y2 := f2("foo")
+
+	if y1 != 8 && y2 != "Foo!" {
+		t.Fail()
+	}
+}
