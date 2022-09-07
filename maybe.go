@@ -1,15 +1,22 @@
 package functional
 
-// a struct that packs together 2 values of any type
-// this can be used, when a function can return two
-// different types, depending on the condition
-type Maybe[A, B any] struct {
-	Left  A
-	Right B
+type Either struct {
+	Err   error
+	Value any
 }
 
-// returns a destructed version of the Maybe types
-// separating Maybe.Left and Maybe.Right
-func DestructMaybe[A, B any](m Maybe[A, B]) (A, B) {
-	return m.Left, m.Right
+func (e Either) Error() string {
+	return e.Err.Error()
+}
+
+func (e Either) HandleErr(h func(...interface{})) Either {
+	h(e)
+	return e
+}
+
+func Maybe[a any](err error, val a) Either {
+	if err != nil {
+		return Either{Err: err}
+	}
+	return Either{Value: val}
 }

@@ -2,58 +2,30 @@ package functional
 
 import (
 	"errors"
+	"log"
 	"testing"
 
 	f "github.com/noam-g4/functional"
 )
 
-func TestMaybeDeclaration(t *testing.T) {
-	intOrString := f.Maybe[int, string]{
-		Left:  5,
-		Right: "foo",
-	}
-
-	if intOrString.Left != 5 && intOrString.Right != "foo" {
-		t.Fail()
-	}
-}
-
-func safeDiv(a, b float32) f.Maybe[float32, error] {
-	var y f.Maybe[float32, error]
+func divide(a, b float32) (error, float32) {
 	if b == 0 {
-		y.Right = errors.New("cannot divide by 0")
-		return y
+		return errors.New("cannot divide by zero!"), 0
 	}
-	y.Left = a / b
-	return y
+	return nil, a / b
 }
 
-func TestErrorUseCase(t *testing.T) {
-	noErr := safeDiv(23.75, 7)
-	withErr := safeDiv(2.5, 0)
+func TestMaybeMonad(t *testing.T) {
 
-	if noErr.Right != nil &&
-		withErr.Right == nil &&
-		noErr.Left > 0 &&
-		withErr.Left == 0 {
-		t.Fail()
-	}
-}
-
-func TestDestructMaybe(t *testing.T) {
-	m1 := safeDiv(5, 0)
-	m2 := f.Maybe[string, bool]{
-		Left:  "bar",
-		Right: true,
+	_, y := divide(7, 5)
+	resOk := f.Maybe(divide(7, 5))
+	if resOk.Value != y {
+		t.Error()
 	}
 
-	flt, err := f.DestructMaybe(m1)
-	str, bool := f.DestructMaybe(m2)
-
-	if flt != 0 &&
-		err.Error() != "cannot divide by 0" &&
-		str != "bar" &&
-		!bool {
-		t.Fail()
+	res := f.Maybe(divide(5, 0)).HandleErr(log.Println)
+	if res.Err == nil {
+		t.Error(res.Error())
 	}
+
 }
