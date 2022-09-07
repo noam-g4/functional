@@ -15,6 +15,13 @@ func divide(a, b float32) (error, float32) {
 	return nil, a / b
 }
 
+func greet(name string) (error, string) {
+	if name == "" {
+		return errors.New("no name"), ""
+	}
+	return nil, "hi " + name
+}
+
 func TestMaybeMonad(t *testing.T) {
 
 	_, y := divide(7, 5)
@@ -28,4 +35,8 @@ func TestMaybeMonad(t *testing.T) {
 		t.Error(res.Error())
 	}
 
+	str := f.Maybe(greet("john")).HandleErr(log.Println).Value
+	if str != "hi john" {
+		t.Error(str)
+	}
 }
