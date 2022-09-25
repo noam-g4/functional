@@ -22,20 +22,20 @@ func greet(name string) (error, string) {
 	return nil, "hi " + name
 }
 
-func TestMaybeMonad(t *testing.T) {
+func TestTryMonad(t *testing.T) {
 
 	_, y := divide(7, 5)
-	resOk := f.Maybe(divide(7, 5))
+	resOk := f.Try(divide(7, 5))
 	if resOk.Value != y {
 		t.Error()
 	}
 
-	res := f.Maybe(divide(5, 0)).HandleErr(log.Println)
+	res := f.Try(divide(5, 0)).HandleErr(log.Println)
 	if res.Err == nil {
 		t.Error(res.Error())
 	}
 
-	str := f.Maybe(greet("john")).HandleErr(log.Println).Value
+	str := f.Try(greet("john")).HandleErr(log.Println).Value
 	if str != "hi john" {
 		t.Error(str)
 	}
