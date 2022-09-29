@@ -10,6 +10,11 @@ import (
 type E struct {
 	Value int
 	Error error
+	Nstd  Nested
+}
+
+type Nested struct {
+	NVal string
 }
 
 type Empty struct {
@@ -21,52 +26,42 @@ func TestToHashMap(t *testing.T) {
 		Value: 5,
 		Error: nil,
 	}
-	_, m := f.ToHashMap(v)
-	if m["Value"] != 5 {
-		t.Error(m, m["Value"])
+	m := f.ToHashMap(v)
+	if m.Value.(f.HashMap)["Value"] != 5 {
+		t.Error(m)
 	}
 
 	d := 5
-	err, _ := f.ToHashMap(d)
-	if err == nil {
+	m2 := f.ToHashMap(d).HandleErr(log.Println)
+	if m2.Err == nil {
 		t.Fail()
 	}
 
 	e := Empty{}
-	err, _ = f.ToHashMap(e)
-	if err != nil {
-		t.Error(err)
+	m3 := f.ToHashMap(e)
+	if m3.Err != nil {
+		t.Error(m3)
 	}
 }
 
 func TestGetValue(t *testing.T) {
 	e := E{
 		Value: 5,
+		Nstd: Nested{
+			NVal: "Nested",
+		},
 	}
-	_, val := f.GetValue("Value", e)
-	if val != 5 {
-		t.Error(val)
+	val1 := f.GetValue[int]("Value", f.ToHashMap(e))
+	if val1.Value != 5 {
+		t.Error(val1)
 	}
-	err, _ := f.GetValue("Undefined", e)
-	if err == nil {
+	val2 := f.GetValue[any]("Undefined", f.ToHashMap(e)).HandleErr(log.Println)
+	if val2.Err == nil {
 		t.Fail()
 	}
-}
-
-func TestGetValueWithEitherMonad(t *testing.T) {
-	e := E{
-		Value: 10,
-	}
-	res1 := f.Try(f.GetValue("Value", e)).HandleErr(log.Println)
-	if res1.Value != 10 {
-		t.Error(res1)
-	}
-	res2 := f.Try(f.GetValue("Undefined", e)).HandleErr(log.Println)
-	if res2.Err == nil {
-		t.Error(res2)
-	}
-	res3 := f.Try(f.GetValue("SomeKey", "not a struct")).HandleErr(log.Println)
-	if res3.Err == nil {
-		t.Error(res3)
+	nstd := f.GetValue[Nested]("Nstd", f.ToHashMap(e)).Value
+	val3 := f.GetValue[string]("NVal", f.ToHashMap(nstd))
+	if val3.Value != "Nested" {
+		t.Error(val3)
 	}
 }

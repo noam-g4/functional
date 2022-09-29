@@ -30,6 +30,8 @@ func (e Either) HandleErr(h func(...interface{})) Either {
 }
 
 /*
+convert any function that returns (error, any) to an Either type
+
 a monad type that lets you pass an error and a value of any type
 **note the you can pass function call that returns (error, any)
 and based on the result of the inner function, it returns an Either type
