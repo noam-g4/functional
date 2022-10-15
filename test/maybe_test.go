@@ -38,9 +38,9 @@ func TestTry(t *testing.T) {
 	os.Setenv("NUM", "asd")
 
 	e := f.Try(getEnv("NUM"))
-	x := f.Then(e, parseFloat)
-	y := f.Then(x, fiveDivideBy)
-	f.HandleError(y, log.Println)
+	x := f.Then(parseFloat, e)
+	y := f.Then(fiveDivideBy, x)
+	f.HandleError(log.Println, y)
 
 	if y.Error == nil {
 		t.Error(y)
@@ -49,8 +49,8 @@ func TestTry(t *testing.T) {
 	os.Setenv("NUM", "5")
 
 	e1 := f.Try(getEnv("NUM"))
-	x1 := f.Then(e1, parseFloat)
-	y1 := f.Then(x1, fiveDivideBy)
+	x1 := f.Then(parseFloat, e1)
+	y1 := f.Then(fiveDivideBy, x1)
 
 	if y1.Value != 1 {
 		t.Error(y1)

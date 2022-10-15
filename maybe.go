@@ -16,7 +16,7 @@ func Try[a any](err error, val a) Maybe[a] {
 	}
 }
 
-func Then[a, b any](m Maybe[a], f func(a) (error, b)) Maybe[b] {
+func Then[a, b any](f func(a) (error, b), m Maybe[a]) Maybe[b] {
 	if m.Error != nil {
 		return Maybe[b]{
 			Error: m.Error,
@@ -25,7 +25,7 @@ func Then[a, b any](m Maybe[a], f func(a) (error, b)) Maybe[b] {
 	return Try(f(m.Value))
 }
 
-func HandleError[a any](m Maybe[a], f func(...interface{})) Maybe[a] {
+func HandleError[a any](f func(...interface{}), m Maybe[a]) Maybe[a] {
 	if m.Error != nil {
 		f(m.Error)
 	}
