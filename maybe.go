@@ -5,18 +5,14 @@ type Maybe[a any] struct {
 	Error error
 }
 
-func Try[a any](err error, val a) Maybe[a] {
-	if err != nil {
-		return Maybe[a]{
-			Error: err,
-		}
-	}
+func Try[a any](val a, err error) Maybe[a] {
 	return Maybe[a]{
 		Value: val,
+		Error: err,
 	}
 }
 
-func Then[a, b any](f func(a) (error, b), m Maybe[a]) Maybe[b] {
+func Then[a, b any](f func(a) (b, error), m Maybe[a]) Maybe[b] {
 	if m.Error != nil {
 		return Maybe[b]{
 			Error: m.Error,
@@ -25,7 +21,7 @@ func Then[a, b any](f func(a) (error, b), m Maybe[a]) Maybe[b] {
 	return Try(f(m.Value))
 }
 
-func HandleError[a any](f func(...interface{}), m Maybe[a]) Maybe[a] {
+func Catch[a any](f func(error), m Maybe[a]) Maybe[a] {
 	if m.Error != nil {
 		f(m.Error)
 	}

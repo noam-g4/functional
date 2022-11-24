@@ -36,7 +36,7 @@ func TestTry(t *testing.T) {
 	e := f.Try(getEnv("NUM"))
 	x := f.Then(parseFloat, e)
 	y := f.Then(fiveDivideBy, x)
-	f.HandleError(func(e error) {
+	f.Catch(func(e error) {
 		log.Println(e)
 	}, y)
 
