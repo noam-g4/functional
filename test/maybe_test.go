@@ -10,27 +10,23 @@ import (
 	f "github.com/noam-g4/functional"
 )
 
-func getEnv(name string) (error, string) {
+func getEnv(name string) (string, error) {
 	if e := os.Getenv(name); e == "" {
-		return errors.New("empty var"), ""
+		return "", errors.New("empty var")
 	} else {
-		return nil, e
+		return e, nil
 	}
 }
 
-func parseFloat(str string) (error, float64) {
-	if x, err := strconv.ParseFloat(str, 32); err != nil {
-		return errors.New("cannont parse to float"), 0
-	} else {
-		return nil, x
-	}
+func parseFloat(str string) (float64, error) {
+	return strconv.ParseFloat(str, 64)
 }
 
-func fiveDivideBy(x float64) (error, float64) {
+func fiveDivideBy(x float64) (float64, error) {
 	if x == 0 {
-		return errors.New("undefiend"), 0
+		return 0, errors.New("undefiend")
 	}
-	return nil, 5 / x
+	return 5 / x, nil
 }
 
 func TestTry(t *testing.T) {
@@ -40,7 +36,9 @@ func TestTry(t *testing.T) {
 	e := f.Try(getEnv("NUM"))
 	x := f.Then(parseFloat, e)
 	y := f.Then(fiveDivideBy, x)
-	f.HandleError(log.Println, y)
+	f.HandleError(func(e error) {
+		log.Println(e)
+	}, y)
 
 	if y.Error == nil {
 		t.Error(y)
