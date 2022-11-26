@@ -21,7 +21,7 @@ func Then[a, b any](f func(a) (b, error), m Maybe[a]) Maybe[b] {
 	return Try(f(m.Value))
 }
 
-func Catch[a any](f func(error), m Maybe[a]) Maybe[a] {
+func (m Maybe[a]) Catch(f func(error)) Maybe[a] {
 	if m.Error != nil {
 		f(m.Error)
 	}

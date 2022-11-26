@@ -35,13 +35,13 @@ func TestTry(t *testing.T) {
 
 	e := f.Try(getEnv("NUM"))
 	x := f.Then(parseFloat, e)
-	y := f.Then(fiveDivideBy, x)
-	f.Catch(func(e error) {
-		log.Println(e)
-	}, y)
+	y := f.Then(fiveDivideBy, x).
+		Catch(func(e error) {
+			log.Println(e)
+		})
 
 	if y.Error == nil {
-		t.Error(y)
+		t.Error(y.Value)
 	}
 
 	os.Setenv("NUM", "5")
