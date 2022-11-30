@@ -2,6 +2,7 @@ package functional
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -54,4 +55,27 @@ func TestTry(t *testing.T) {
 		t.Error(y1)
 	}
 
+}
+
+func TestTryCatch(t *testing.T) {
+	y := f.
+		Try(func(name string) (float64, error) {
+			e := os.Getenv(name)
+			if e == "" {
+				return 0, errors.New(fmt.Sprintf("env %s is not set", e))
+			}
+			x, err := strconv.ParseFloat(e, 64)
+			if err != nil {
+				return 0, err
+			}
+			if x == 0 {
+				return 0, errors.New("cannot divide by 0")
+			}
+			return 5 / x, nil
+		}("NUM")).
+		Catch(func(e error) {
+			log.Println(e)
+		})
+
+	t.Error(y)
 }
