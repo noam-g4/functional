@@ -2,7 +2,6 @@ package functional
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -45,9 +44,9 @@ func TestTry(t *testing.T) {
 		t.Error(y.Value)
 	}
 
-	os.Setenv("NUM", "5")
+	os.Setenv("NUM2", "5")
 
-	e1 := f.Try(getEnv("NUM"))
+	e1 := f.Try(getEnv("NUM2"))
 	x1 := f.Then(parseFloat, e1)
 	y1 := f.Then(fiveDivideBy, x1)
 
@@ -57,25 +56,39 @@ func TestTry(t *testing.T) {
 
 }
 
-func TestTryCatch(t *testing.T) {
-	y := f.
-		Try(func(name string) (float64, error) {
-			e := os.Getenv(name)
-			if e == "" {
-				return 0, errors.New(fmt.Sprintf("env %s is not set", e))
-			}
-			x, err := strconv.ParseFloat(e, 64)
-			if err != nil {
-				return 0, err
-			}
-			if x == 0 {
-				return 0, errors.New("cannot divide by 0")
-			}
-			return 5 / x, nil
-		}("NUM")).
-		Catch(func(e error) {
-			log.Println(e)
-		})
+func BenchmarkNoMaybe(b *testing.B) {
+	os.Setenv("NUM3", "8")
+	doAll := func(name string) (float64, error) {
+		env, err := getEnv(name)
+		if err != nil {
+			return 0, err
+		}
+		x, err := parseFloat(env)
+		if err != nil {
+			return 0, err
+		}
+		y, err := fiveDivideBy(x)
+		if err != nil {
+			return 0, err
+		}
+		return y, err
+	}
 
-	t.Error(y)
+	for n := 0; n < b.N; n++ {
+		_, err := doAll("NUM3")
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+}
+
+func BenchmarkMaybe(b *testing.B) {
+	os.Setenv("NUM3", "8")
+	for n := 0; n < b.N; n++ {
+		env := f.Try(getEnv("NUM3"))
+		x := f.Then(parseFloat, env)
+		f.Then(fiveDivideBy, x).
+			Catch(func(e error) { log.Println(e) })
+	}
 }
