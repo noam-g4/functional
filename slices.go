@@ -18,31 +18,24 @@ func AppendToSlice[T any](y []T, x T) []T {
 // and returns a new slice of which each element
 // has being passed through the function parameter
 func Map[A, B any](xs []A, f func(A) B) []B {
-	return mapPrime(xs, f, make([]B, 0))
-}
-
-func mapPrime[A, B any](xs []A, f func(A) B, y []B) []B {
-	if IsEmptySlice(xs) {
-		return y
+	b := make([]B, len(xs))
+	for i, x := range xs {
+		b[i] = f(x)
 	}
-	return mapPrime(xs[1:], f, AppendToSlice(y, f(xs[0])))
+	return b
 }
 
 // takes a slice, predicate function and empty EmptySet
 // and returns a new slice of only the elements that have
 // resulted true when passed to the predicate function
 func Filter[T any](xs []T, p func(T) bool) []T {
-	return filterPrime(xs, p, make([]T, 0))
-}
-
-func filterPrime[T any](xs []T, p func(T) bool, y []T) []T {
-	if IsEmptySlice(xs) {
-		return y
+	out := make([]T, 0)
+	for _, x := range xs {
+		if p(x) {
+			out = append(out, x)
+		}
 	}
-	if p(xs[0]) {
-		return filterPrime(xs[1:], p, AppendToSlice(y, xs[0]))
-	}
-	return filterPrime(xs[1:], p, y)
+	return out
 }
 
 // takes a slice, a function that takes an accumalator and
