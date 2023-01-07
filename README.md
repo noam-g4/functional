@@ -1,5 +1,5 @@
 # functional
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/noam-g4/functional/Go%20Test?label=tests)
+[![Go Test](https://github.com/noam-g4/functional/actions/workflows/test.yml/badge.svg)](https://github.com/noam-g4/functional/actions/workflows/test.yml)
 
 a functional programming package for go
 this package levarges the use of Go *Generics*, introduced in Go 1.18.
