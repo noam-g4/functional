@@ -92,3 +92,11 @@ func TestConcatSlices(t *testing.T) {
 		}
 	}
 }
+
+func TestNewSet(t *testing.T) {
+	s := []int{1, 1, 2, 2, 3, 4, 4}
+	out := f.NewSet(s)
+	if len(out) != 4 {
+		t.Error(out)
+	}
+}

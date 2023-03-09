@@ -63,3 +63,17 @@ func IsIn[T comparable](x T, xs []T) bool {
 func ConcatSlices[T any](s1, s2 []T) []T {
 	return append(s1, s2...)
 }
+
+// takes a silce
+// and returns a slice with only distinct value
+func NewSet[T comparable](slc []T) []T {
+	m := make(map[T]bool)
+	y := make([]T, 0)
+	for _, x := range slc {
+		m[x] = true
+	}
+	for k := range m {
+		y = append(y, k)
+	}
+	return y
+}
